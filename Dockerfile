@@ -39,9 +39,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq5 \
 WORKDIR /app
 COPY --from=deps-dev /app/.venv /app/.venv
 COPY src/ /app/
+COPY commands/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # stage 3b
 FROM python:3.12-slim AS prod
@@ -56,7 +58,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq5 \
 WORKDIR /app
 COPY --from=deps-prod /app/.venv /app/.venv
 COPY src/ /app/
+COPY commands/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 USER appuser
 
 EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["docker-entrypoint.sh"]
