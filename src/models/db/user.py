@@ -23,7 +23,7 @@ class UserStatus(Enum):
     inactive = "inactive"
 
 
-class UserModel(TimestampMixin, BaseModel):
+class UserModel(BaseModel, TimestampMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)

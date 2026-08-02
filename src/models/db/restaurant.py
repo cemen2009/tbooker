@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from datetime import time
 from enum import StrEnum
 
-from sqlalchemy import ForeignKey, String, Time, Enum, UniqueConstraint, Enum as SaEnum
+from sqlalchemy import ForeignKey, String, Time, UniqueConstraint, Enum as SaEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.db.base_model import BaseModel, TimestampMixin
@@ -18,7 +18,7 @@ class RestaurantStatus(StrEnum):
     deactivated = "deactivated"
 
 
-class RestaurantModel(TimestampMixin, BaseModel):
+class RestaurantModel(BaseModel, TimestampMixin):
     __tablename__ = "restaurants"
     __table_args__ = (
         UniqueConstraint("name", "city_id", name="uq_restaurant_name_city_id"),

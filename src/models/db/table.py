@@ -31,11 +31,11 @@ class TableModel(BaseModel, TimestampMixin):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    number: Mapped[str] = mapped_column(String(32), nullable=False)
+    number: Mapped[str] = mapped_column(String(32))
     status: Mapped[TableStatus] = mapped_column(
-        SaEnum(TableStatus), nullable=False, default=TableStatus.active
+        SaEnum(TableStatus), default=TableStatus.active
     )
-    capacity: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    capacity: Mapped[int] = mapped_column(SmallInteger)
 
     restaurant_id: Mapped[int] = mapped_column(ForeignKey("restaurants.id"))
     restaurant: Mapped["RestaurantModel"] = relationship(
