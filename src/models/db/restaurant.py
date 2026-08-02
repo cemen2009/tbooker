@@ -35,7 +35,9 @@ class RestaurantModel(BaseModel, TimestampMixin):
     closes_at: Mapped[time] = mapped_column(Time(timezone=False))
 
     status: Mapped[RestaurantStatus] = mapped_column(
-        SaEnum(RestaurantStatus), default=RestaurantStatus.pending
+        SaEnum(RestaurantStatus),
+        default=RestaurantStatus.pending,
+        server_default=RestaurantStatus.pending,
     )
     address: Mapped[str] = mapped_column(String(255))
 
