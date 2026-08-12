@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from src.core.config import get_settings
-from src.models.db.base_model import BaseModel
+from core.config import get_settings
+from models.db.base_model import BaseModel
 
 # import every model so Base.metadata know about all table -
 # autogenerate can only see models that have actually been imported
-from src.models.db import *
+from models.db import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
