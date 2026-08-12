@@ -20,7 +20,7 @@ def setup_logging(debug: bool) -> None:
     else:
         # if the level was changed during a second call, update it
         root_logger.handlers[0].setLevel(level)
-    
+
     # here we can quit third party libraries, because they're noisy at INFO/DEBUG
     # e.g. logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
     # e.g. logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
