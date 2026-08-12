@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.db.base_model import BaseModel, TimestampMixin
 
-
 if TYPE_CHECKING:
     from models.db.city import CityModel
     from models.db.booking import BookingModel
@@ -35,9 +34,13 @@ class UserModel(BaseModel, TimestampMixin):
     status: Mapped[UserStatus] = mapped_column(SaEnum(UserStatus))
 
     city_id: Mapped[Optional[int]] = mapped_column(ForeignKey("cities.id"))
-    city: Mapped[Optional["CityModel"]] = relationship("CityModel", back_populates="users")
+    city: Mapped[Optional["CityModel"]] = relationship(
+        "CityModel", back_populates="users"
+    )
 
-    bookings: Mapped[list["BookingModel"]] = relationship("BookingModel", back_populates="user")
+    bookings: Mapped[list["BookingModel"]] = relationship(
+        "BookingModel", back_populates="user"
+    )
 
     def __repr__(self) -> str:
         return f"UserModel(id={self.id!r}, email={self.email!r}, first_name={self.first_name!r}, last_name={self.last_name!r})"

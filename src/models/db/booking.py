@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import TSRANGE, ExcludeConstraint
 
 from models.db.base_model import BaseModel, TimestampMixin
 
-
 if TYPE_CHECKING:
     from models.db.table import TableModel
     from models.db.user import UserModel
@@ -22,7 +21,7 @@ class BookingModel(BaseModel, TimestampMixin):
             name="ex_booking_no_overlap_per_table",
         ),
     )
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     booking_date: Mapped[date] = mapped_column(Date, nullable=False)
@@ -31,7 +30,7 @@ class BookingModel(BaseModel, TimestampMixin):
 
     # generated column. see in initial Alembic migration
     time_range: Mapped[str] = mapped_column(TSRANGE, system=True)
-    
+
     table_id: Mapped[int] = mapped_column(ForeignKey("tables.id", ondelete="RESTRICT"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
