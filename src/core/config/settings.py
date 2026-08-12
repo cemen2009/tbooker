@@ -1,5 +1,5 @@
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
 
 
 class DatabaseSettings(BaseSettings):
@@ -10,6 +10,11 @@ class DatabaseSettings(BaseSettings):
     name: str
 
     model_config = SettingsConfigDict(env_prefix="DB_")
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def url(self) -> str:
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
 class RedisSettings(BaseSettings):
