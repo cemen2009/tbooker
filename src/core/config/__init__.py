@@ -18,5 +18,5 @@ def get_settings() -> Settings:
     env_file = Path(_ENV_FILES.get(env, ".env.dev"))
 
     if env_file.exists():
-        load_dotenv(env_file)
+        load_dotenv(env_file, override=True)
     return Settings(environment=env)  # type: ignore[call-arg]
