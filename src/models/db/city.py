@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.db.base_model import BaseModel
@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 
 class CityModel(BaseModel):
     __tablename__ = "cities"
+    __table_args__ = (
+        UniqueConstraint("name", "country_code", name="uq_city_name_country_code"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
