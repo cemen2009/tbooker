@@ -128,3 +128,8 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('restaurants')
     op.drop_table('cities')
+
+    op.execute("DROP TYPE IF EXISTS tablestatus")
+    op.execute("DROP TYPE IF EXISTS userrole")
+    op.execute("DROP TYPE IF EXISTS userstatus")
+    op.execute("DROP TYPE IF EXISTS restaurantstatus")
