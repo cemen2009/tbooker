@@ -29,6 +29,8 @@ mypy             = "^1.10"
 pre-commit       = "^3.7"
 black = "^26.5.1"
 alembic = "^1.19.1"
+testcontainers = "^4.15.0"
+psycopg2-binary = "^2.9.13"
 
 [build-system]
 requires = ["poetry-core"]
@@ -52,7 +54,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"       # every async test runs without @pytest.mark.asyncio
 testpaths    = ["tests"]
-pythonpath   = ["src"]
+pythonpath = ["src"]
 
 [tool.pyright]
 include = ["src"]
