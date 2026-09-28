@@ -34,8 +34,9 @@ target_metadata = BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.db.url)
+if config.get_main_option("sqlalchemy.url") is None:
+    settings = get_settings()
+    config.set_main_option("sqlalchemy.url", settings.db.url)
 
 
 def run_migrations_offline() -> None:
