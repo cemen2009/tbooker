@@ -1,9 +1,16 @@
 from typing import TYPE_CHECKING
-from datetime import date, time
+from datetime import date, time, datetime
 
-from sqlalchemy import ForeignKey, Time, Date, SmallInteger, column
+from sqlalchemy import (
+    Computed,
+    Date,
+    ForeignKey,
+    SmallInteger,
+    Time,
+    column,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import TSRANGE, ExcludeConstraint
+from sqlalchemy.dialects.postgresql import TSRANGE, ExcludeConstraint, Range
 
 from models.db.base_model import BaseModel, TimestampMixin
 
@@ -28,8 +35,16 @@ class BookingModel(BaseModel, TimestampMixin):
     start_time: Mapped[time] = mapped_column(Time, nullable=False)
     slot_count: Mapped[int] = mapped_column(SmallInteger, nullable=False)
 
-    # generated column. see in initial Alembic migration
-    time_range: Mapped[str] = mapped_column(TSRANGE, system=True)
+    # generated column: Postgres computes this from booking_date/start_time/slot_count
+    time_range: Mapped[Range[datetime]] = mapped_column(
+        TSRANGE,
+        Computed(
+            "tsrange((booking_date + start_time)::timestamp, "
+            "(booking_date + start_time)::timestamp + (slot_count * interval '30 minutes'))",
+            persisted=True
+        ),
+        nullable=False,
+    )
 
     table_id: Mapped[int] = mapped_column(ForeignKey("tables.id", ondelete="RESTRICT"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
