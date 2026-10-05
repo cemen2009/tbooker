@@ -1,10 +1,17 @@
 import asyncio
+from datetime import time
+from uuid import uuid4
 
+import pytest
 from alembic import command
 from alembic.config import Config
-import pytest
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.postgres import PostgresContainer
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+
+from models.db.city import CityModel
+from models.db.restaurant import RestaurantModel
+from models.db.table import TableModel
+from models.db.user import UserModel, UserRole, UserStatus
 
 
 @pytest.fixture(scope="module")
@@ -46,3 +53,51 @@ async def db_session(db_engine):
     async_session = async_sessionmaker(db_engine, expire_on_commit=False)
     async with async_session() as session:
         yield session
+
+
+@pytest.fixture
+async def table_factory(db_session):
+    async def create_table(number: str | None = None):
+        suffix = uuid4().hex
+        city = CityModel(
+            name=f"Test City {suffix}", country_code="TC", timezone="UTC"
+        )
+        restaurant = RestaurantModel(
+            email=f"restaurant-{suffix}@example.com",
+            phone=f"+1{suffix[:10]}",
+            name=f"Test Restaurant {suffix}",
+            description="Test restaurant",
+            opens_at=time(9, 0),
+            closes_at=time(22, 0),
+            address="1 Test Street",
+            city=city,
+        )
+        table = TableModel(
+            number=number or f"T-{suffix[:8]}",
+            capacity=4,
+            restaurant=restaurant,
+        )
+        db_session.add(table)
+        await db_session.flush()
+        return table
+
+    return create_table
+
+
+@pytest.fixture
+async def user_factory(db_session):
+    async def create_user():
+        suffix = uuid4().hex
+        user = UserModel(
+            email=f"user-{suffix}@example.com",
+            hashed_password="test-password-hash",
+            first_name="Test",
+            last_name="User",
+            role=UserRole.user,
+            status=UserStatus.active,
+        )
+        db_session.add(user)
+        await db_session.flush()
+        return user
+
+    return create_user
