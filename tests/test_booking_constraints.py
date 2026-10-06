@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from models.db.booking import BookingModel
 
 
-async def test_overlapping_booking_on_same_table_rejected(db_session, table_factory, user_factory):
+async def test_overlapping_booking_on_same_table_rejected(
+    db_session, table_factory, user_factory
+):
     table = await table_factory()
     user = await user_factory()
 
@@ -17,7 +19,7 @@ async def test_overlapping_booking_on_same_table_rejected(db_session, table_fact
         table_id=table.id,
         user_id=user.id,
     )
-    
+
     db_session.add(first_booking)
     await db_session.commit()
 
@@ -34,7 +36,9 @@ async def test_overlapping_booking_on_same_table_rejected(db_session, table_fact
         await db_session.commit()
 
 
-async def test_back_to_back_bookings_on_same_table_are_allowed(db_session, table_factory, user_factory):
+async def test_back_to_back_bookings_on_same_table_are_allowed(
+    db_session, table_factory, user_factory
+):
     table = await table_factory()
     user = await user_factory()
 
@@ -60,7 +64,9 @@ async def test_back_to_back_bookings_on_same_table_are_allowed(db_session, table
     assert second_booking.id is not None
 
 
-async def test_identical_time_range_on_different_tables_is_allowed(db_session, table_factory, user_factory):
+async def test_identical_time_range_on_different_tables_is_allowed(
+    db_session, table_factory, user_factory
+):
     table_1 = await table_factory(number="A1")
     table_2 = await table_factory(number="B1")
     user = await user_factory()
@@ -87,7 +93,9 @@ async def test_identical_time_range_on_different_tables_is_allowed(db_session, t
     assert second_booking.id is not None
 
 
-async def test_time_range_generated_column_matches_expected_booked_window(db_session, table_factory, user_factory):
+async def test_time_range_generated_column_matches_expected_booked_window(
+    db_session, table_factory, user_factory
+):
     table = await table_factory()
     user = await user_factory()
 
@@ -114,7 +122,9 @@ async def test_time_range_generated_column_matches_expected_booked_window(db_ses
     assert booking.time_range.upper == expected_end
 
 
-async def test_two_non_overlapping_bookings_on_same_table_succeed(db_session, table_factory, user_factory):
+async def test_two_non_overlapping_bookings_on_same_table_succeed(
+    db_session, table_factory, user_factory
+):
     table = await table_factory(number="D1")
     user = await user_factory()
 

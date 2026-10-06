@@ -5,14 +5,20 @@ from core.config import get_settings
 
 
 @pytest.mark.parametrize(
-        "env_name, expected_db_host, expected_db_name, expected_redis_host, expected_ttl",
-        [
-            ("dev", "localhost", "postgres-dev", "localhost", 30),
-            ("prod", "db", "postgres-prod", "redis", 60),
-        ],
+    "env_name, expected_db_host, expected_db_name, expected_redis_host, expected_ttl",
+    [
+        ("dev", "localhost", "postgres-dev", "localhost", 30),
+        ("prod", "db", "postgres-prod", "redis", 60),
+    ],
 )
 def test_settings_loads_by_environment(
-    monkeypatch, tmp_path, env_name, expected_db_host, expected_db_name, expected_redis_host, expected_ttl
+    monkeypatch,
+    tmp_path,
+    env_name,
+    expected_db_host,
+    expected_db_name,
+    expected_redis_host,
+    expected_ttl,
 ):
     monkeypatch.chdir(tmp_path)
     get_settings.cache_clear()
@@ -46,7 +52,6 @@ def test_settings_loads_by_environment(
                 f"REDIS__HOST={expected_redis_host}",
                 "REDIS__PORT=6379",
                 f"REDIS__TTL_SECONDS={expected_ttl}",
-
                 # new line is not important for load_dotenv,
                 # it's just a convinient way to write it at the end of a file.
                 # It comes from POSIX systems, where \n meant end of a line.

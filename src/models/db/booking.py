@@ -41,7 +41,7 @@ class BookingModel(BaseModel, TimestampMixin):
         Computed(
             "tsrange((booking_date + start_time)::timestamp, "
             "(booking_date + start_time)::timestamp + (slot_count * interval '30 minutes'))",
-            persisted=True
+            persisted=True,
         ),
         nullable=False,
     )

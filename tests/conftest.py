@@ -59,9 +59,7 @@ async def db_session(db_engine):
 async def table_factory(db_session):
     async def create_table(number: str | None = None):
         suffix = uuid4().hex
-        city = CityModel(
-            name=f"Test City {suffix}", country_code="TC", timezone="UTC"
-        )
+        city = CityModel(name=f"Test City {suffix}", country_code="TC", timezone="UTC")
         restaurant = RestaurantModel(
             email=f"restaurant-{suffix}@example.com",
             phone=f"+1{suffix[:10]}",

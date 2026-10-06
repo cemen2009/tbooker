@@ -33,9 +33,7 @@ class CityModel(BaseModel):
     restaurants: Mapped[list["RestaurantModel"]] = relationship(
         "RestaurantModel", back_populates="city"
     )
-    users: Mapped[list["UserModel"]] = relationship(
-        "UserModel", back_populates="city"
-    )
+    users: Mapped[list["UserModel"]] = relationship("UserModel", back_populates="city")
 
     def __repr__(self) -> str:
         return f"CityModel(id={self.id!r}, name={self.name!r})"
