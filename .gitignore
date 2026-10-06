@@ -1,6 +1,15 @@
 .idea/
+.vscode/
+
 .venv/
 venv/
 
 __pycache__/
 */__pycache__/
+
+.env
+.env.prod
+.env.demo
+.env.dev
+
+.coverage

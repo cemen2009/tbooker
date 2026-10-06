@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from core.config import get_settings
+
+settings = get_settings()
+# TODO: setup logger
+
+app = FastAPI(title="Table Booker", debug=settings.debug)
 
 
 @app.get("/health")
