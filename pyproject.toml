@@ -56,6 +56,9 @@ asyncio_mode = "auto"       # every async test runs without @pytest.mark.asyncio
 testpaths    = ["tests"]
 pythonpath = ["src"]
 
+[tool.coverage.run]
+source = ["src"]
+
 [tool.pyright]
 include = ["src"]
 extraPaths = ["src"]
