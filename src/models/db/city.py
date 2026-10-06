@@ -7,6 +7,7 @@ from models.db.base_model import BaseModel
 
 if TYPE_CHECKING:
     from models.db.restaurant import RestaurantModel
+    from models.db.user import UserModel
 
 
 class CityModel(BaseModel):
@@ -32,6 +33,7 @@ class CityModel(BaseModel):
     restaurants: Mapped[list["RestaurantModel"]] = relationship(
         "RestaurantModel", back_populates="city"
     )
+    users: Mapped[list["UserModel"]] = relationship("UserModel", back_populates="city")
 
     def __repr__(self) -> str:
         return f"CityModel(id={self.id!r}, name={self.name!r})"

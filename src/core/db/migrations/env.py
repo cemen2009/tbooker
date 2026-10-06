@@ -34,6 +34,7 @@ target_metadata = BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+# we don't set sqlalchemy.url in the alembic.ini, only in .env
 settings = get_settings()
 config.set_main_option("sqlalchemy.url", settings.db.url)
 

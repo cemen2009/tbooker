@@ -7,8 +7,8 @@ from core.config import get_settings
 @pytest.mark.parametrize(
     "env_name, expected_db_host, expected_db_name, expected_redis_host, expected_ttl",
     [
-        ("dev", "localhost", "tbooker", "localhost", 30),
-        ("prod", "prod-db", "tbooker_prod", "prod-redis", 60),
+        ("dev", "localhost", "postgres-dev", "localhost", 30),
+        ("prod", "db", "postgres-prod", "redis", 60),
     ],
 )
 def test_settings_loads_by_environment(
@@ -23,8 +23,9 @@ def test_settings_loads_by_environment(
     monkeypatch.chdir(tmp_path)
     get_settings.cache_clear()
 
-    for key in (
-        "ENVIRONMENT",
+    # in case any environment variables are set, we want to clear them for the test
+    for env_var in (
+        "ENIRONMENT",
         "DEBUG",
         "DB__HOST",
         "DB__PORT",
@@ -35,7 +36,7 @@ def test_settings_loads_by_environment(
         "REDIS__PORT",
         "REDIS__TTL_SECONDS",
     ):
-        monkeypatch.delenv(key, raising=False)
+        monkeypatch.delenv(env_var, raising=False)
 
     env_file = tmp_path / f".env.{env_name}"
     env_file.write_text(
@@ -51,6 +52,10 @@ def test_settings_loads_by_environment(
                 f"REDIS__HOST={expected_redis_host}",
                 "REDIS__PORT=6379",
                 f"REDIS__TTL_SECONDS={expected_ttl}",
+                # new line is not important for load_dotenv,
+                # it's just a convinient way to write it at the end of a file.
+                # It comes from POSIX systems, where \n meant end of a line.
+                # If there was no \n - line is incomplete
                 "",
             ]
         )

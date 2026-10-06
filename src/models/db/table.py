@@ -37,7 +37,9 @@ class TableModel(BaseModel, TimestampMixin):
     )
     capacity: Mapped[int] = mapped_column(SmallInteger)
 
-    restaurant_id: Mapped[int] = mapped_column(ForeignKey("restaurants.id", ondelete="CASCADE"))
+    restaurant_id: Mapped[int] = mapped_column(
+        ForeignKey("restaurants.id", ondelete="CASCADE")
+    )
     restaurant: Mapped["RestaurantModel"] = relationship(
         "RestaurantModel", back_populates="tables"
     )
