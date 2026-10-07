@@ -1,8 +1,9 @@
 import asyncio
+from logging import getLogger
 from logging.config import fileConfig
 
 from sqlalchemy import pool
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, make_url
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
@@ -34,9 +35,12 @@ target_metadata = BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-# we don't set sqlalchemy.url in the alembic.ini, only in .env
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.db.url)
+
+# Use an explicitly configured URL (for example, the test container URL),
+# falling back to application settings for normal Alembic CLI usage.
+if not config.get_main_option("sqlalchemy.url"):
+    settings = get_settings()
+    config.set_main_option("sqlalchemy.url", settings.db.url)
 
 
 def run_migrations_offline() -> None:
