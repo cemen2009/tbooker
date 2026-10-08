@@ -5,6 +5,7 @@ from uuid import uuid4
 import pytest
 from alembic import command
 from alembic.config import Config
+from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.postgres import PostgresContainer
 
@@ -14,7 +15,7 @@ from models.db.table import TableModel
 from models.db.user import UserModel, UserRole, UserStatus
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def postgres_container():
     with PostgresContainer("postgres:18") as container:
         yield container
@@ -29,7 +30,10 @@ def test_db_async_url(postgres_container) -> str:
 
 @pytest.fixture(scope="session")
 async def db_engine(test_db_async_url):
-    async_engine = create_async_engine(test_db_async_url)
+
+    # asyncEngine may be used across different event loops in tests.
+    # NullPool prevents connections created in one loop from being reused in another
+    async_engine = create_async_engine(test_db_async_url, poolclass=NullPool)
 
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", test_db_async_url)
