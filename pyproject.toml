@@ -52,21 +52,9 @@ strict               = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-# if change to "strict" then all async tests must be decorated with @pytest.mark.asyncio
-# and async fixture must be decorated with @pytest_asyncio.fixture instead of @pytest.fixture
 asyncio_mode = "auto"       # every async test runs without @pytest.mark.asyncio
-asyncio_default_fixture_loop_scope = "session"
-asyncio_default_test_loop_scope = "session"
 testpaths    = ["tests"]
 pythonpath = ["src"]
-addopts = "--cov --cov-report=term-missing"
-
-[tool.coverage.run]
-source = ["src"]
-omit = [
-    "*/__init__.py",
-    "*/migrations/env.py",
-]
 
 [tool.pyright]
 include = ["src"]
