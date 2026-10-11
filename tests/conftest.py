@@ -30,10 +30,13 @@ def test_db_async_url(postgres_container) -> str:
 
 @pytest.fixture(scope="session")
 async def db_engine(test_db_async_url):
-
-    # asyncEngine may be used across different event loops in tests.
-    # NullPool prevents connections created in one loop from being reused in another
-    async_engine = create_async_engine(test_db_async_url, poolclass=NullPool)
+    # asyncio event loop for tests was changed to session scope (in pyproject.toml),
+    # if it will be changed to function scope (default), add here parameter for engine creation:
+    # `poolclass=NullPool`
+    # because connections, which were created in one loop,
+    # will be reused in another loop and it will cause an error:
+    # "Future attached to a different loop" or "another operation is in progress"
+    async_engine = create_async_engine(test_db_async_url)
 
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", test_db_async_url)
