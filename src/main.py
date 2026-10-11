@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from core.config.settings import get_settings
+from core.config import get_settings
 from core.logging import setup_logging
 
 settings = get_settings()
