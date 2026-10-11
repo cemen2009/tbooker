@@ -21,15 +21,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Install Poetry
+        run: pipx install poetry==2.3.2
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: poetry
           cache-dependency-path: poetry.lock
-
-      - name: Install Poetry
-        run: pipx install poetry==2.3.2
 
       - name: Install dependencies
         run: poetry install --with dev --no-interaction --no-ansi
