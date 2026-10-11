@@ -1,13 +1,13 @@
 import ssl
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from logging import getLogger
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
-    create_async_engine,
     async_sessionmaker,
+    create_async_engine,
 )
 
 from core.config import get_settings
@@ -50,13 +50,13 @@ AsyncPostgresSession: async_sessionmaker[AsyncSession] = async_sessionmaker(
 
 
 @asynccontextmanager
-async def get_postgres_db_contextmanager() -> AsyncGenerator[AsyncSession]:
+async def get_postgres_db_contextmanager() -> AsyncGenerator[AsyncSession, None]:
     """Yield a PostgreSQL session and close it when the context exits."""
     async with AsyncPostgresSession() as session:
         yield session
 
 
-async def get_postgres_db() -> AsyncGenerator[AsyncSession]:
+async def get_postgres_db() -> AsyncGenerator[AsyncSession, None]:
     """Yield a PostgreSQL session for dependency-injection consumers."""
     async with get_postgres_db_contextmanager() as session:
         yield session
