@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from core.config import get_settings
+from core.config.settings import get_settings
 from models.db.base_model import BaseModel
 
 # import every model so Base.metadata know about all table -

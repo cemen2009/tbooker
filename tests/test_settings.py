@@ -1,7 +1,7 @@
 import pytest
 from dotenv import load_dotenv
 
-from core.config import get_settings
+from core.config.settings import get_settings
 
 
 @pytest.mark.parametrize(
