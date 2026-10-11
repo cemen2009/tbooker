@@ -5,6 +5,7 @@ from uuid import uuid4
 import pytest
 from alembic import command
 from alembic.config import Config
+from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.postgres import PostgresContainer
 
@@ -14,7 +15,7 @@ from models.db.table import TableModel
 from models.db.user import UserModel, UserRole, UserStatus
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def postgres_container():
     with PostgresContainer("postgres:18") as container:
         yield container
@@ -29,6 +30,12 @@ def test_db_async_url(postgres_container) -> str:
 
 @pytest.fixture(scope="session")
 async def db_engine(test_db_async_url):
+    # asyncio event loop for tests was changed to session scope (in pyproject.toml),
+    # if it will be changed to function scope (default), add here parameter for engine creation:
+    # `poolclass=NullPool`
+    # because connections, which were created in one loop,
+    # will be reused in another loop and it will cause an error:
+    # "Future attached to a different loop" or "another operation is in progress"
     async_engine = create_async_engine(test_db_async_url)
 
     alembic_cfg = Config("alembic.ini")

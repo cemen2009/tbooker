@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from core.config.settings import Settings
+from config.settings import Settings
 
 _ENV_FILES = {"dev": ".env.dev", "prod": ".env.prod"}
 
