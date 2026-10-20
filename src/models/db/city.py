@@ -17,12 +17,15 @@ class CityModel(BaseModel):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     country_code: Mapped[str] = mapped_column(
-        String(2), comment="ISO 3166-1 alpha-2 country code, e.g. 'UA', 'US'"
+        String(2),
+        nullable=False,
+        comment="ISO 3166-1 alpha-2 country code, e.g. 'UA', 'US'",
     )
     timezone: Mapped[str] = mapped_column(
         String(50),
+        nullable=False,
         comment=(
             "IANA timezone identifier, e.g. 'Europe/Kyiv'. "
             "Do not use fixed UTC offsets — they break under DST/political "
