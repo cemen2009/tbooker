@@ -17,6 +17,7 @@ redis            = {extras = ["hiredis"], version = "^5.0"}
 minio            = "^7.2"
 pydantic-settings = "^2.0"
 python-multipart  = ">=0.0.9"          # required for FastAPI form/file handling
+pycountry = "^26.2.16"
 
 
 [tool.poetry.group.dev.dependencies]
