@@ -45,7 +45,7 @@ CountryCode = Annotated[
 ]
 Timezone = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, max_length=50),
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=50),
     AfterValidator(_validate_timezone),
 ]
 
@@ -114,34 +114,30 @@ class CityPatch(BaseModel):
         return self
 
 
-class CityListItemResponse(CityBase):
+class CityListItemResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
         json_schema_extra={
             "examples": [
                 {
-                    "id": 1,
                     "name": "Kyiv",
                     "country_code": "UA",
-                    "timezone": "Europe/Kyiv",
                 },
                 {
-                    "id": 2,
                     "name": "Warsaw",
                     "country_code": "PL",
-                    "timezone": "Europe/Warsaw",
                 },
             ]
         },
     )
 
-    id: int
+    name: CityName
+    country_code: CountryCode
 
 
-class CityDetailResponse(CityListItemResponse):
-    """Single-city payload; can grow without changing the list payload."""
-
+class CityDetailResponse(CityBase):
     model_config = ConfigDict(
+        from_attributes=True,
         json_schema_extra={
             "examples": [
                 {
@@ -154,6 +150,8 @@ class CityDetailResponse(CityListItemResponse):
         },
     )
 
+    id: int
+
 
 class CityListResponse(PageResponse[CityListItemResponse]):
     model_config = ConfigDict(
@@ -162,16 +160,12 @@ class CityListResponse(PageResponse[CityListItemResponse]):
                 {
                     "items": [
                         {
-                            "id": 1,
                             "name": "Kyiv",
                             "country_code": "UA",
-                            "timezone": "Europe/Kyiv",
                         },
                         {
-                            "id": 2,
                             "name": "Warsaw",
                             "country_code": "PL",
-                            "timezone": "Europe/Warsaw",
                         },
                     ],
                     "total": 42,
