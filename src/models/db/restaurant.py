@@ -28,7 +28,7 @@ class RestaurantModel(BaseModel, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True)
     phone: Mapped[str] = mapped_column(String(20), unique=True)
     name: Mapped[str] = mapped_column(String(125))
-    description: Mapped[str] = mapped_column(String(625))
+    description: Mapped[str] = mapped_column(String(625), nullable=True)
 
     # opens_at=09:00 means "9am in whatever timezone self.city.timezone says"
     opens_at: Mapped[time] = mapped_column(Time(timezone=False))

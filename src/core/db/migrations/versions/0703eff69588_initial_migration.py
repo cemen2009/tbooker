@@ -49,7 +49,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("phone", sa.String(length=20), nullable=False),
         sa.Column("name", sa.String(length=125), nullable=False),
-        sa.Column("description", sa.String(length=625), nullable=False),
+        sa.Column("description", sa.String(length=625), nullable=True),
         sa.Column("opens_at", sa.Time(), nullable=False),
         sa.Column("closes_at", sa.Time(), nullable=False),
         sa.Column(
