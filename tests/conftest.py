@@ -95,7 +95,7 @@ async def user_factory(db_session):
         suffix = uuid4().hex
         user = UserModel(
             email=f"user-{suffix}@example.com",
-            hashed_password="test-password-hash",
+            _hashed_password="test-password-hash",
             first_name="Test",
             last_name="User",
             role=UserRole.user,
