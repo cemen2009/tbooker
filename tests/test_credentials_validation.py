@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from core.authn import CredentialsValidator
-from models.schemas.user import UserCreate
+from core.security import CredentialsValidator
+from models.schemas.user import UserCreate, UserPatch, UserPut
 
 
 @pytest.mark.parametrize(
@@ -91,3 +91,23 @@ def test_user_create_uses_password_policy():
 
     user_data["password"] = "TbookerExample9!"
     assert UserCreate.model_validate(user_data).password == "TbookerExample9!"
+
+
+def test_user_put_and_patch_do_not_accept_password_changes():
+    user_fields = {
+        "email": "alex@example.com",
+        "first_name": "Alex",
+        "last_name": "Smith",
+        "city_id": None,
+    }
+
+    assert UserPut.model_validate(user_fields)
+    with pytest.raises(ValidationError):
+        UserPut.model_validate({**user_fields, "password": "TbookerExample9!"})
+
+    assert UserPatch.model_validate({"first_name": "Alexandra"})
+    with pytest.raises(ValidationError):
+        UserPatch.model_validate({"password": "TbookerExample9!"})
+
+    assert "password" not in UserPut.model_fields
+    assert "password" not in UserPatch.model_fields
