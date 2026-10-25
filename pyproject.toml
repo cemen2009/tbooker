@@ -19,6 +19,7 @@ pydantic-settings = "^2.0"
 python-multipart  = ">=0.0.9"          # required for FastAPI form/file handling
 pycountry = "^26.2.16"
 email-validator = "^2.0"
+pwdlib = {extras = ["argon2"], version = "^0.3.1"}
 
 
 [tool.poetry.group.dev.dependencies]
