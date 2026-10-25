@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
 from models.db.base_model import BaseModel
 
@@ -37,6 +38,10 @@ class CityModel(BaseModel):
         "RestaurantModel", back_populates="city"
     )
     users: Mapped[list["UserModel"]] = relationship("UserModel", back_populates="city")
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.name.asc(), cls.country_code.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return f"CityModel(id={self.id!r}, name={self.name!r})"

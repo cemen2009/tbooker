@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING
-from datetime import date, time, datetime
+from datetime import date, datetime, time
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (
     Computed,
@@ -9,8 +9,9 @@ from sqlalchemy import (
     Time,
     column,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import TSRANGE, ExcludeConstraint, Range
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
 from models.db.base_model import BaseModel, TimestampMixin
 
@@ -51,6 +52,10 @@ class BookingModel(BaseModel, TimestampMixin):
 
     table: Mapped["TableModel"] = relationship("TableModel", back_populates="bookings")
     user: Mapped["UserModel"] = relationship("UserModel", back_populates="bookings")
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.booking_date.asc(), cls.start_time.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return f"BookingModel(id={self.id!r})"

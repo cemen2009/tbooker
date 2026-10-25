@@ -1,9 +1,11 @@
-from typing import TYPE_CHECKING
 from datetime import time
 from enum import StrEnum
+from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ForeignKey, String, Time, UniqueConstraint, Enum as SaEnum
+from sqlalchemy import Enum as SaEnum
+from sqlalchemy import ForeignKey, String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
 from models.db.base_model import BaseModel, TimestampMixin
 
@@ -47,6 +49,10 @@ class RestaurantModel(BaseModel, TimestampMixin):
     tables: Mapped[list["TableModel"]] = relationship(
         "TableModel", back_populates="restaurant", cascade="all, delete-orphan"
     )
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.name.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return (

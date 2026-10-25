@@ -1,21 +1,24 @@
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (
     CheckConstraint,
-    UniqueConstraint,
-    Enum as SaEnum,
     ForeignKey,
     SmallInteger,
     String,
+    UniqueConstraint,
+)
+from sqlalchemy import (
+    Enum as SaEnum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
 from models.db.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
-    from models.db.restaurant import RestaurantModel
     from models.db.booking import BookingModel
+    from models.db.restaurant import RestaurantModel
 
 
 class TableStatus(Enum):
@@ -47,6 +50,10 @@ class TableModel(BaseModel, TimestampMixin):
     bookings: Mapped[list["BookingModel"]] = relationship(
         "BookingModel", back_populates="table"
     )
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.number.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return f"Table(id={self.id!r}, number={self.number!r})"
