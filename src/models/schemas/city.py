@@ -13,7 +13,7 @@ from pydantic import (
 from pydantic.json_schema import SkipJsonSchema
 
 from models.schemas.pagination import PageResponse
-
+from models.schemas.restaurant import RestaurantListItemResponse
 
 _VALID_TIMEZONES: frozenset[str] = frozenset(zoneinfo.available_timezones())
 
@@ -145,12 +145,23 @@ class CityDetailResponse(CityBase):
                     "name": "Kyiv",
                     "country_code": "UA",
                     "timezone": "Europe/Kyiv",
+                    "restaurants": [
+                        {
+                            "email": "hello@example.com",
+                            "phone": "+380441234567",
+                            "name": "Kyiv Bistro",
+                            "description": "Modern Ukrainian cuisine",
+                            "city": "Kyiv",
+                            "address": "1 Khreshchatyk Street",
+                        }
+                    ],
                 }
             ]
         },
     )
 
     id: int
+    restaurants: list[RestaurantListItemResponse]
 
 
 class CityListResponse(PageResponse[CityListItemResponse]):
