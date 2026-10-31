@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 from pydantic.json_schema import SkipJsonSchema
 
 from models.orm.table import TableStatus
+from models.schemas.booking import BookingListItemResponse
 from models.schemas.pagination import PageResponse
 
 TableNumber = Annotated[
@@ -109,6 +110,15 @@ class TableDetailResponse(BaseModel):
                     "status": "active",
                     "capacity": 4,
                     "restaurant_id": 1,
+                    "bookings": [
+                        {
+                            "id": 2,
+                            "booking_date": "2026-11-02",
+                            "start_time": "18:00:00",
+                            "slot_count": 2,
+                            "table_id": 1,
+                        }
+                    ],
                     "created_at": "2026-10-25T10:00:00Z",
                     "updated_at": "2026-10-25T10:00:00Z",
                 }
@@ -121,6 +131,7 @@ class TableDetailResponse(BaseModel):
     status: TableStatus
     capacity: TableCapacity
     restaurant_id: RestaurantId
+    bookings: list[BookingListItemResponse]
     created_at: datetime
     updated_at: datetime
 
