@@ -1,10 +1,10 @@
 import pytest
 
-from models.db.booking import BookingModel
-from models.db.city import CityModel
-from models.db.restaurant import RestaurantModel
-from models.db.table import TableModel
-from models.db.user import UserModel
+from models.orm.booking import BookingModel
+from models.orm.city import CityModel
+from models.orm.restaurant import RestaurantModel
+from models.orm.table import TableModel
+from models.orm.user import UserModel
 
 
 @pytest.mark.parametrize(

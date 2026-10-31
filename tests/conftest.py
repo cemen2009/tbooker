@@ -9,10 +9,10 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.postgres import PostgresContainer
 
-from models.db.city import CityModel
-from models.db.restaurant import RestaurantModel
-from models.db.table import TableModel
-from models.db.user import UserModel, UserRole, UserStatus
+from models.orm.city import CityModel
+from models.orm.restaurant import RestaurantModel
+from models.orm.table import TableModel
+from models.orm.user import UserModel, UserRole, UserStatus
 
 
 @pytest.fixture(scope="session")
