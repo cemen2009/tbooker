@@ -14,6 +14,7 @@ from pydantic.json_schema import SkipJsonSchema
 
 from models.orm.restaurant import RestaurantStatus
 from models.schemas.pagination import PageResponse
+from models.schemas.table import TableListItemResponse
 
 RestaurantEmail = Annotated[EmailStr, Field(max_length=255)]
 RestaurantPhone = Annotated[
@@ -163,6 +164,7 @@ class RestaurantDetailResponse(RestaurantBase):
                     "status": "active",
                     "address": "1 Rynok Square",
                     "city_id": 1,
+                    "tables": [{"id": 1, "number": "A1", "restaurant_id": 1}],
                     "created_at": "2026-10-20T12:00:00Z",
                     "updated_at": "2026-10-20T12:00:00Z",
                 }
@@ -172,6 +174,7 @@ class RestaurantDetailResponse(RestaurantBase):
 
     id: int
     status: RestaurantStatus
+    tables: list[TableListItemResponse]
     created_at: datetime
     updated_at: datetime
 
