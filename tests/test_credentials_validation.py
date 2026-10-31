@@ -111,3 +111,27 @@ def test_user_put_and_patch_do_not_accept_password_changes():
 
     assert "password" not in UserPut.model_fields
     assert "password" not in UserPatch.model_fields
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("first_name", "Ірина"),
+        ("last_name", "Kowalski-Żółć"),
+    ],
+)
+@pytest.mark.parametrize("model", [UserCreate, UserPut, UserPatch])
+def test_user_names_accept_international_letters(model, field, value):
+    user_data = {
+        "email": "alex@example.com",
+        "password": "TbookerExample9!",
+        "first_name": "Alex",
+        "last_name": "Smith",
+    }
+    if model is UserPut:
+        user_data.pop("password")
+        user_data["city_id"] = None
+    if model is UserPatch:
+        user_data = {}
+
+    assert model.model_validate({**user_data, field: value})

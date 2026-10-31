@@ -29,7 +29,7 @@ RestaurantDescription = Annotated[
 RestaurantAddress = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)
 ]
-CityId = Annotated[int, Field(...)]
+CityId = Annotated[int, Field(gt=0)]
 
 
 class RestaurantBase(BaseModel):
@@ -42,7 +42,7 @@ class RestaurantBase(BaseModel):
     opens_at: time
     closes_at: time
     address: RestaurantAddress
-    city_id: int
+    city_id: CityId
 
 
 class RestaurantCreate(RestaurantBase):

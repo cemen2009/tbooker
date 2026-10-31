@@ -40,7 +40,7 @@ UserFirstName = Annotated[
         strip_whitespace=True,
         min_length=1,
         max_length=75,
-        pattern=r"^[A-Za-z]+(?:[ '-]?[A-Za-z]+)*$"
+        pattern=r"^\p{L}[\p{L}\p{M}]*(?:[ '-]\p{L}[\p{L}\p{M}]*)*$",
     ),
 ]
 UserLastName = UserFirstName
