@@ -117,6 +117,7 @@ class TableDetailResponse(BaseModel):
                             "start_time": "18:00:00",
                             "slot_count": 2,
                             "table_id": 1,
+                            "user_id": 2,
                         }
                     ],
                     "created_at": "2026-10-25T10:00:00Z",

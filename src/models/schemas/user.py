@@ -170,6 +170,7 @@ class UserDetailResponse(UserListItemResponse):
                             "start_time": "18:00:00",
                             "slot_count": 2,
                             "table_id": 4,
+                            "user_id": 1,
                         }
                     ],
                     "archive_bookings": [
@@ -179,6 +180,7 @@ class UserDetailResponse(UserListItemResponse):
                             "start_time": "19:00:00",
                             "slot_count": 3,
                             "table_id": 2,
+                            "user_id": 1,
                         }
                     ],
                     "created_at": "2026-10-25T10:00:00Z",

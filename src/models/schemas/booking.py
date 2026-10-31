@@ -96,6 +96,7 @@ class BookingListItemResponse(BaseModel):
                     "start_time": "18:00:00",
                     "slot_count": 2,
                     "table_id": 1,
+                    "user_id": 2,
                 }
             ]
         },
@@ -106,6 +107,7 @@ class BookingListItemResponse(BaseModel):
     start_time: time
     slot_count: SlotCount
     table_id: TableId
+    user_id: UserId
 
 
 class BookingDetailResponse(BookingListItemResponse):
@@ -144,6 +146,7 @@ class BookingListResponse(PageResponse[BookingListItemResponse]):
                             "start_time": "18:00:00",
                             "slot_count": 2,
                             "table_id": 1,
+                            "user_id": 2,
                         }
                     ],
                     "total": 1,
