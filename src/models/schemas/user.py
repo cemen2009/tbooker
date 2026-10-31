@@ -10,6 +10,7 @@ from pydantic import (
     model_validator,
 )
 from pydantic.json_schema import SkipJsonSchema
+from pydantic.types import StrictStr
 
 from core.security import CredentialsValidator
 from models.orm.user import UserRole, UserStatus
@@ -34,11 +35,15 @@ UserPassword = Annotated[
     BeforeValidator(CredentialsValidator.validate_password),
 ]
 UserFirstName = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=75)
+    StrictStr,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=75,
+        pattern=r"^[A-Za-z]+(?:[ '-]?[A-Za-z]+)*$"
+    ),
 ]
-UserLastName = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=90)
-]
+UserLastName = UserFirstName
 CityId = Annotated[int, Field(gt=0)]
 
 
