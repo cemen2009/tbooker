@@ -13,6 +13,7 @@ from pydantic.json_schema import SkipJsonSchema
 
 from core.security import CredentialsValidator
 from models.orm.user import UserRole, UserStatus
+from models.schemas.booking import BookingListItemResponse
 from models.schemas.pagination import PageResponse
 
 UserEmail = Annotated[
@@ -131,11 +132,8 @@ class UserListItemResponse(BaseModel):
                 {
                     "id": 1,
                     "email": "alex@example.com",
-                    "first_name": "Alex",
-                    "last_name": "Smith",
                     "role": "user",
                     "status": "active",
-                    "city_id": 1,
                 }
             ]
         },
@@ -143,11 +141,8 @@ class UserListItemResponse(BaseModel):
 
     id: int
     email: UserEmail
-    first_name: UserFirstName
-    last_name: UserLastName
     role: UserRole
     status: UserStatus
-    city_id: CityId | None
 
 
 class UserDetailResponse(UserListItemResponse):
@@ -158,11 +153,29 @@ class UserDetailResponse(UserListItemResponse):
                 {
                     "id": 1,
                     "email": "alex@example.com",
-                    "first_name": "Alex",
-                    "last_name": "Smith",
                     "role": "user",
                     "status": "active",
+                    "first_name": "Alex",
+                    "last_name": "Smith",
                     "city_id": None,
+                    "active_bookings": [
+                        {
+                            "id": 2,
+                            "booking_date": "2026-11-02",
+                            "start_time": "18:00:00",
+                            "slot_count": 2,
+                            "table_id": 4,
+                        }
+                    ],
+                    "archive_bookings": [
+                        {
+                            "id": 1,
+                            "booking_date": "2026-10-25",
+                            "start_time": "19:00:00",
+                            "slot_count": 3,
+                            "table_id": 2,
+                        }
+                    ],
                     "created_at": "2026-10-25T10:00:00Z",
                     "updated_at": "2026-10-25T10:00:00Z",
                 }
@@ -170,6 +183,11 @@ class UserDetailResponse(UserListItemResponse):
         },
     )
 
+    first_name: UserFirstName
+    last_name: UserLastName
+    city_id: CityId | None
+    active_bookings: list[BookingListItemResponse]
+    archive_bookings: list[BookingListItemResponse]
     created_at: datetime
     updated_at: datetime
 
@@ -183,11 +201,8 @@ class UserListResponse(PageResponse[UserListItemResponse]):
                         {
                             "id": 1,
                             "email": "alex@example.com",
-                            "first_name": "Alex",
-                            "last_name": "Smith",
                             "role": "user",
                             "status": "active",
-                            "city_id": 1,
                         }
                     ],
                     "total": 1,
