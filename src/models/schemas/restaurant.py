@@ -12,7 +12,7 @@ from pydantic import (
 )
 from pydantic.json_schema import SkipJsonSchema
 
-from models.db.restaurant import RestaurantStatus
+from models.orm.restaurant import RestaurantStatus
 from models.schemas.pagination import PageResponse
 
 RestaurantEmail = Annotated[EmailStr, Field(max_length=255)]

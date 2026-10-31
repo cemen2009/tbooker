@@ -12,7 +12,7 @@ from pydantic import (
 from pydantic.json_schema import SkipJsonSchema
 
 from core.security import CredentialsValidator
-from models.db.user import UserRole, UserStatus
+from models.orm.user import UserRole, UserStatus
 from models.schemas.pagination import PageResponse
 
 UserEmail = Annotated[
