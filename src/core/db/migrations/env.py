@@ -34,9 +34,10 @@ target_metadata = BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-# we don't set sqlalchemy.url in the alembic.ini, only in .env
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.db.url)
+# keep URLs explicitly supplied by callers (for example, test containers).
+if not config.get_main_option("sqlalchemy.url"):
+    settings = get_settings()
+    config.set_main_option("sqlalchemy.url", settings.db.url)
 
 
 def run_migrations_offline() -> None:
