@@ -1,13 +1,14 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
-from models.db.base_model import BaseModel
+from models.orm.base_model import BaseModel
 
 if TYPE_CHECKING:
-    from models.db.restaurant import RestaurantModel
-    from models.db.user import UserModel
+    from models.orm.restaurant import RestaurantModel
+    from models.orm.user import UserModel
 
 
 class CityModel(BaseModel):
@@ -17,12 +18,15 @@ class CityModel(BaseModel):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     country_code: Mapped[str] = mapped_column(
-        String(2), comment="ISO 3166-1 alpha-2 country code, e.g. 'UA', 'US'"
+        String(2),
+        nullable=False,
+        comment="ISO 3166-1 alpha-2 country code, e.g. 'UA', 'US'",
     )
     timezone: Mapped[str] = mapped_column(
         String(50),
+        nullable=False,
         comment=(
             "IANA timezone identifier, e.g. 'Europe/Kyiv'. "
             "Do not use fixed UTC offsets — they break under DST/political "
@@ -34,6 +38,10 @@ class CityModel(BaseModel):
         "RestaurantModel", back_populates="city"
     )
     users: Mapped[list["UserModel"]] = relationship("UserModel", back_populates="city")
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.name.asc(), cls.country_code.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return f"CityModel(id={self.id!r}, name={self.name!r})"

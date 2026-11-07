@@ -49,7 +49,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("phone", sa.String(length=20), nullable=False),
         sa.Column("name", sa.String(length=125), nullable=False),
-        sa.Column("description", sa.String(length=625), nullable=False),
+        sa.Column("description", sa.String(length=625), nullable=True),
         sa.Column("opens_at", sa.Time(), nullable=False),
         sa.Column("closes_at", sa.Time(), nullable=False),
         sa.Column(
@@ -82,7 +82,7 @@ def upgrade() -> None:
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("email", sa.String(length=255), nullable=False),
-        sa.Column("password", sa.String(), nullable=False),
+        sa.Column("hashed_password", sa.String(length=255), nullable=False),
         sa.Column("first_name", sa.String(length=75), nullable=False),
         sa.Column("last_name", sa.String(length=90), nullable=False),
         sa.Column("role", sa.Enum("admin", "user", name="userrole"), nullable=False),

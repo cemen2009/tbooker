@@ -3,7 +3,7 @@ from datetime import date, datetime, time, timedelta
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from models.db.booking import BookingModel
+from models.orm.booking import BookingModel
 
 
 async def test_overlapping_booking_on_same_table_rejected(
