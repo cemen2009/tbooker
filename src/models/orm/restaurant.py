@@ -1,15 +1,17 @@
-from typing import TYPE_CHECKING
 from datetime import time
 from enum import StrEnum
+from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ForeignKey, String, Time, UniqueConstraint, Enum as SaEnum
+from sqlalchemy import Enum as SaEnum
+from sqlalchemy import ForeignKey, String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
-from models.db.base_model import BaseModel, TimestampMixin
+from models.orm.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
-    from models.db.city import CityModel
-    from models.db.table import TableModel
+    from models.orm.city import CityModel
+    from models.orm.table import TableModel
 
 
 class RestaurantStatus(StrEnum):
@@ -28,7 +30,7 @@ class RestaurantModel(BaseModel, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True)
     phone: Mapped[str] = mapped_column(String(20), unique=True)
     name: Mapped[str] = mapped_column(String(125))
-    description: Mapped[str] = mapped_column(String(625))
+    description: Mapped[str] = mapped_column(String(625), nullable=True)
 
     # opens_at=09:00 means "9am in whatever timezone self.city.timezone says"
     opens_at: Mapped[time] = mapped_column(Time(timezone=False))
@@ -47,6 +49,10 @@ class RestaurantModel(BaseModel, TimestampMixin):
     tables: Mapped[list["TableModel"]] = relationship(
         "TableModel", back_populates="restaurant", cascade="all, delete-orphan"
     )
+
+    @classmethod
+    def order_by(cls) -> list[ColumnElement[Any]]:
+        return [cls.name.asc(), cls.id.asc()]
 
     def __repr__(self) -> str:
         return (

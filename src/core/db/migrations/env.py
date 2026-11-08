@@ -8,11 +8,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from core.config import get_settings
-from models.db.base_model import BaseModel
+from models.orm.base_model import BaseModel
 
 # import every model so Base.metadata know about all table -
 # autogenerate can only see models that have actually been imported
-from models.db import *
+from models.orm import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -34,9 +34,10 @@ target_metadata = BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-# we don't set sqlalchemy.url in the alembic.ini, only in .env
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.db.url)
+# keep URLs explicitly supplied by callers (for example, test containers).
+if not config.get_main_option("sqlalchemy.url"):
+    settings = get_settings()
+    config.set_main_option("sqlalchemy.url", settings.db.url)
 
 
 def run_migrations_offline() -> None:
