@@ -1,13 +1,17 @@
 from uuid import uuid4
 
-from models.db.user import UserModel, UserRole, UserStatus
-from users.repository import UserRepository
+import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
+
+from models.orm.user import UserModel, UserRole, UserStatus
+from repositories.repository import UserRepository
 
 
 def build_user(email: str, *, first_name: str, status: UserStatus) -> UserModel:
     return UserModel(
         email=email,
-        _hashed_password="test-password-hash",
+        hashed_password="test-password-hash",
         first_name=first_name,
         last_name="Repository",
         role=UserRole.user,
@@ -34,6 +38,54 @@ async def test_user_repository_crud(db_session):
 
     await repository.delete_user(created)
     assert await repository.get_user_by_id(created.id) is None
+
+
+async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session):
+    repository = UserRepository(db_session)
+    user = build_user(
+        "Mixed.Case@example.com",
+        first_name="Email",
+        status=UserStatus.active,
+    )
+
+    assert user.email == "mixed.case@example.com"
+    await repository.create_user(user)
+    assert await repository.get_user_by_email("MIXED.CASE@EXAMPLE.COM") is user
+
+    user.email = "Updated.Case@example.com"
+    await repository.update_user(user)
+    assert user.email == "updated.case@example.com"
+    assert await repository.get_user_by_email("UPDATED.CASE@EXAMPLE.COM") is user
+
+    duplicate = build_user(
+        "UPDATED.CASE@EXAMPLE.COM",
+        first_name="Duplicate",
+        status=UserStatus.active,
+    )
+    with pytest.raises(IntegrityError):
+        await repository.create_user(duplicate)
+    await db_session.rollback()
+
+
+async def test_database_rejects_non_lowercase_user_email(db_session):
+    statement = text(
+        "INSERT INTO users (email, password, first_name, last_name, role, status) "
+        "VALUES (:email, :password, :first_name, :last_name, :role, :status)"
+    )
+
+    with pytest.raises(IntegrityError):
+        await db_session.execute(
+            statement,
+            {
+                "email": "Mixed.Case@example.com",
+                "password": "test-password-hash",
+                "first_name": "Email",
+                "last_name": "Case",
+                "role": "user",
+                "status": "active",
+            },
+        )
+    await db_session.rollback()
 
 
 async def test_get_paginated_users_filters_and_orders(db_session):

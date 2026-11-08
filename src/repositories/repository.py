@@ -2,7 +2,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 
-from models.db import UserModel, UserStatus
+from models.orm import UserModel, UserStatus
 
 
 class UserRepository:
@@ -20,7 +20,7 @@ class UserRepository:
         return result.one_or_none()
 
     async def get_user_by_email(self, email: str) -> UserModel | None:
-        statement = select(UserModel).where(UserModel.email == email)
+        statement = select(UserModel).where(UserModel.email == email.lower())
         result = await self.session.scalars(statement)
         return result.one_or_none()
 

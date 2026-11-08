@@ -5,18 +5,17 @@ from sqlalchemy import (
     CheckConstraint,
     ForeignKey,
     String,
-    UniqueConstraint,
 )
 from sqlalchemy import (
     Enum as SaEnum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from models.db.base_model import BaseModel, TimestampMixin
+from models.orm.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
-    from models.db.booking import BookingModel
-    from models.db.city import CityModel
+    from models.orm.booking import BookingModel
+    from models.orm.city import CityModel
 
 
 class UserRole(Enum):

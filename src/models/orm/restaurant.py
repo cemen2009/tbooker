@@ -5,11 +5,11 @@ from enum import StrEnum
 from sqlalchemy import ForeignKey, String, Time, UniqueConstraint, Enum as SaEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.db.base_model import BaseModel, TimestampMixin
+from models.orm.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
-    from models.db.city import CityModel
-    from models.db.table import TableModel
+    from models.orm.city import CityModel
+    from models.orm.table import TableModel
 
 
 class RestaurantStatus(StrEnum):

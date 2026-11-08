@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.db.base_model import BaseModel
+from models.orm.base_model import BaseModel
 
 if TYPE_CHECKING:
-    from models.db.restaurant import RestaurantModel
-    from models.db.user import UserModel
+    from models.orm.restaurant import RestaurantModel
+    from models.orm.user import UserModel
 
 
 class CityModel(BaseModel):

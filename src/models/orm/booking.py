@@ -12,11 +12,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import TSRANGE, ExcludeConstraint, Range
 
-from models.db.base_model import BaseModel, TimestampMixin
+from models.orm.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
-    from models.db.table import TableModel
-    from models.db.user import UserModel
+    from models.orm.table import TableModel
+    from models.orm.user import UserModel
 
 
 class BookingModel(BaseModel, TimestampMixin):
