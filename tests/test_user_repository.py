@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 from models.orm.user import UserModel, UserRole, UserStatus
-from repositories.repository import UserRepository
+from repositories import UserRepository
 
 
 def build_user(email: str, *, first_name: str, status: UserStatus) -> UserModel:
