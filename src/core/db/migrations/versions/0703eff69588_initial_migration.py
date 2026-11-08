@@ -81,7 +81,7 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("email", sa.String(length=255), nullable=False),
+        sa.Column("email", sa.String(length=255), nullable=False, unique=True),
         sa.Column("password", sa.String(), nullable=False),
         sa.Column("first_name", sa.String(length=75), nullable=False),
         sa.Column("last_name", sa.String(length=90), nullable=False),
@@ -109,7 +109,7 @@ def upgrade() -> None:
             ["cities.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("email"),
+        sa.CheckConstraint("email = lower(email)", name="ck_users_email_lowercase"),
     )
     op.create_table(
         "tables",
