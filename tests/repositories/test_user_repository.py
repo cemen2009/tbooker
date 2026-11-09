@@ -3,6 +3,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from models.orm.user import UserModel, UserRole, UserStatus
 from repositories import UserRepository
@@ -19,7 +20,7 @@ def build_user(email: str, *, first_name: str, status: UserStatus) -> UserModel:
     )
 
 
-async def test_user_repository_crud(db_session):
+async def test_user_repository_crud(db_session, db_engine):
     repository = UserRepository(db_session)
     user = build_user(
         f"user-{uuid4().hex}@example.com",
@@ -27,10 +28,17 @@ async def test_user_repository_crud(db_session):
         status=UserStatus.active,
     )
 
-    created = await repository.create_user(user)
+    created = await repository.create_new_user(user)
     assert created.id is not None
     assert await repository.get_user_by_id(created.id) is created
     assert await repository.get_user_by_email(created.email) is created
+
+    async_session = async_sessionmaker(db_engine)
+    async with async_session() as verification_session:
+        assert (
+            await UserRepository(verification_session).get_user_by_id(created.id)
+            is not None
+        )
 
     created.first_name = "Updated"
     await repository.update_user(created)
@@ -38,6 +46,27 @@ async def test_user_repository_crud(db_session):
 
     await repository.delete_user(created)
     assert await repository.get_user_by_id(created.id) is None
+
+
+async def test_create_new_user_and_dont_commit(db_session, db_engine):
+    repository = UserRepository(db_session)
+    user = build_user(
+        f"user-{uuid4().hex}@example.com",
+        first_name="Uncommitted",
+        status=UserStatus.active,
+    )
+
+    created = await repository.create_new_user_and_dont_commit(user)
+    assert created.id is not None
+
+    async_session = async_sessionmaker(db_engine)
+    async with async_session() as verification_session:
+        assert (
+            await UserRepository(verification_session).get_user_by_id(created.id)
+            is None
+        )
+
+    await db_session.rollback()
 
 
 async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session):
@@ -49,7 +78,7 @@ async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session)
     )
 
     assert user.email == "mixed.case@example.com"
-    await repository.create_user(user)
+    await repository.create_new_user(user)
     assert await repository.get_user_by_email("MIXED.CASE@EXAMPLE.COM") is user
 
     user.email = "Updated.Case@example.com"
@@ -63,7 +92,7 @@ async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session)
         status=UserStatus.active,
     )
     with pytest.raises(IntegrityError):
-        await repository.create_user(duplicate)
+        await repository.create_new_user(duplicate)
     await db_session.rollback()
 
 
@@ -109,7 +138,7 @@ async def test_get_paginated_users_filters_and_orders(db_session):
         ),
     ]
     for user in users:
-        await repository.create_user(user)
+        await repository.create_new_user(user)
 
     first_page, total = await repository.get_paginated_users(
         search_word=search_token,
