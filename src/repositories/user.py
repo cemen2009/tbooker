@@ -9,9 +9,14 @@ class UserRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def create_user(self, user: UserModel) -> UserModel:
+    async def create_new_user_and_dont_commit(self, user: UserModel) -> UserModel:
         self.session.add(user)
         await self.session.flush()
+        return user
+
+    async def create_new_user(self, user: UserModel) -> UserModel:
+        await self.create_new_user_and_dont_commit(user)
+        await self.session.commit()
         return user
 
     async def get_user_by_id(self, user_id: int) -> UserModel | None:
