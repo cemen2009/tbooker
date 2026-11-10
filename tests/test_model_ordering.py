@@ -12,7 +12,7 @@ from models.orm.user import UserModel
     [
         (CityModel, ("name", "country_code", "id")),
         (RestaurantModel, ("name", "id")),
-        (UserModel, ("last_name", "first_name", "id")),
+        (UserModel, ("first_name", "last_name", "id")),
         (TableModel, ("number", "id")),
         (BookingModel, ("booking_date", "start_time", "id")),
     ],

@@ -59,7 +59,7 @@ class UserModel(BaseModel, TimestampMixin):
 
     @classmethod
     def order_by(cls) -> list[ColumnElement[Any]]:
-        return [cls.last_name.asc(), cls.first_name.asc(), cls.id.asc()]
+        return [cls.first_name.asc(), cls.last_name.asc(), cls.id.asc()]
 
     @property
     def password(self) -> None:
