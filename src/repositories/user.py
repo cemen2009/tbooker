@@ -74,10 +74,19 @@ class UserRepository:
         result = await self.session.scalars(statement)
         return list(result.all()), total
 
-    async def update_user(self, user: UserModel) -> UserModel:
+    async def update_user_and_dont_commit(self, user: UserModel) -> UserModel:
         await self.session.flush()
         return user
 
-    async def delete_user(self, user: UserModel) -> None:
+    async def update_user(self, user: UserModel) -> UserModel:
+        await self.update_user_and_dont_commit(user)
+        await self.session.commit()
+        return user
+
+    async def delete_user_and_dont_commit(self, user: UserModel) -> None:
         await self.session.delete(user)
         await self.session.flush()
+
+    async def delete_user(self, user: UserModel) -> None:
+        await self.delete_user_and_dont_commit(user)
+        await self.session.commit()

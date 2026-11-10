@@ -23,10 +23,19 @@ class TableRepository:
         result = await self.session.scalars(statement)
         return result.one_or_none()
 
-    async def update_table(self, table: TableModel) -> TableModel:
+    async def update_table_and_dont_commit(self, table: TableModel) -> TableModel:
         await self.session.flush()
         return table
 
-    async def delete_table(self, table: TableModel) -> None:
+    async def update_table(self, table: TableModel) -> TableModel:
+        await self.update_table_and_dont_commit(table)
+        await self.session.commit()
+        return table
+
+    async def delete_table_and_dont_commit(self, table: TableModel) -> None:
         await self.session.delete(table)
         await self.session.flush()
+
+    async def delete_table(self, table: TableModel) -> None:
+        await self.delete_table_and_dont_commit(table)
+        await self.session.commit()

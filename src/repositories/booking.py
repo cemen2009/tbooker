@@ -25,10 +25,21 @@ class BookingRepository:
         result = await self.session.scalars(statement)
         return result.one_or_none()
 
-    async def update_booking(self, booking: BookingModel) -> BookingModel:
+    async def update_booking_and_dont_commit(
+        self, booking: BookingModel
+    ) -> BookingModel:
         await self.session.flush()
         return booking
 
-    async def delete_booking(self, booking: BookingModel) -> None:
+    async def update_booking(self, booking: BookingModel) -> BookingModel:
+        await self.update_booking_and_dont_commit(booking)
+        await self.session.commit()
+        return booking
+
+    async def delete_booking_and_dont_commit(self, booking: BookingModel) -> None:
         await self.session.delete(booking)
         await self.session.flush()
+
+    async def delete_booking(self, booking: BookingModel) -> None:
+        await self.delete_booking_and_dont_commit(booking)
+        await self.session.commit()

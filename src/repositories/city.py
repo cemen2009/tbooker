@@ -23,10 +23,19 @@ class CityRepository:
         result = await self.session.scalars(statement)
         return result.one_or_none()
 
-    async def update_city(self, city: CityModel) -> CityModel:
+    async def update_city_and_dont_commit(self, city: CityModel) -> CityModel:
         await self.session.flush()
         return city
 
-    async def delete_city(self, city: CityModel) -> None:
+    async def update_city(self, city: CityModel) -> CityModel:
+        await self.update_city_and_dont_commit(city)
+        await self.session.commit()
+        return city
+
+    async def delete_city_and_dont_commit(self, city: CityModel) -> None:
         await self.session.delete(city)
         await self.session.flush()
+
+    async def delete_city(self, city: CityModel) -> None:
+        await self.delete_city_and_dont_commit(city)
+        await self.session.commit()
