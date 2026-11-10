@@ -12,7 +12,7 @@ from repositories import UserRepository
 def build_user(email: str, *, first_name: str, status: UserStatus) -> UserModel:
     return UserModel(
         email=email,
-        hashed_password="test-password-hash",
+        _hashed_password="test-password-hash",
         first_name=first_name,
         last_name="Repository",
         role=UserRole.user,
@@ -20,32 +20,34 @@ def build_user(email: str, *, first_name: str, status: UserStatus) -> UserModel:
     )
 
 
-async def test_user_repository_crud(db_session, db_engine):
-    repository = UserRepository(db_session)
+async def test_user_repository_crud(db_engine):
+    async_session = async_sessionmaker(db_engine, expire_on_commit=False)
     user = build_user(
         f"user-{uuid4().hex}@example.com",
         first_name="Create",
         status=UserStatus.active,
     )
 
-    created = await repository.create_new_user(user)
-    assert created.id is not None
-    assert await repository.get_user_by_id(created.id) is created
-    assert await repository.get_user_by_email(created.email) is created
+    async with async_session() as session:
+        repository = UserRepository(session)
+        created = await repository.create_new_user(user)
+        assert created.id is not None
+        assert await repository.get_user_by_id(created.id) is created
+        assert await repository.get_user_by_email(created.email) is created
 
-    async_session = async_sessionmaker(db_engine)
-    async with async_session() as verification_session:
-        assert (
-            await UserRepository(verification_session).get_user_by_id(created.id)
-            is not None
-        )
+        async with async_session() as verification_session:
+            assert (
+                await UserRepository(verification_session).get_user_by_id(created.id)
+                is not None
+            )
 
-    created.first_name = "Updated"
-    await repository.update_user(created)
-    assert created.first_name == "Updated"
+        created.first_name = "Updated"
+        await repository.update_user(created)
+        assert created.first_name == "Updated"
 
-    await repository.delete_user(created)
-    assert await repository.get_user_by_id(created.id) is None
+        await repository.delete_user(created)
+        await session.commit()
+        assert await repository.get_user_by_id(created.id) is None
 
 
 async def test_create_new_user_and_dont_commit(db_session, db_engine):
@@ -98,7 +100,7 @@ async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session)
 
 async def test_database_rejects_non_lowercase_user_email(db_session):
     statement = text(
-        "INSERT INTO users (email, password, first_name, last_name, role, status) "
+        "INSERT INTO users (email, hashed_password, first_name, last_name, role, status) "
         "VALUES (:email, :password, :first_name, :last_name, :role, :status)"
     )
 

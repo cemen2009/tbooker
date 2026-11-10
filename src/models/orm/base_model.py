@@ -1,12 +1,14 @@
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.sql.elements import ColumnElement
 
 
 class BaseModel(DeclarativeBase):
     @classmethod
-    def order_by(cls) -> list:
+    def order_by(cls) -> list[ColumnElement[Any]]:
         raise NotImplementedError()
 
 

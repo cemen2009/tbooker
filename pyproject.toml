@@ -19,6 +19,7 @@ pydantic-settings = "^2.0"
 python-multipart  = ">=0.0.9"          # required for FastAPI form/file handling
 pycountry = "^26.2.16"
 email-validator = "^2.0"
+pwdlib = {extras = ["argon2"], version = "^0.3.1"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -54,21 +55,9 @@ strict               = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-# if change to "strict" then all async tests must be decorated with @pytest.mark.asyncio
-# and async fixture must be decorated with @pytest_asyncio.fixture instead of @pytest.fixture
 asyncio_mode = "auto"       # every async test runs without @pytest.mark.asyncio
-asyncio_default_fixture_loop_scope = "session"
-asyncio_default_test_loop_scope = "session"
 testpaths    = ["tests"]
 pythonpath = ["src"]
-addopts = "--cov --cov-report=term-missing"
-
-[tool.coverage.run]
-source = ["src"]
-omit = [
-    "*/__init__.py",
-    "*/migrations/env.py",
-]
 
 [tool.pyright]
 include = ["src"]

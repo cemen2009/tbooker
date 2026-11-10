@@ -1664,6 +1664,25 @@ files = [
 ]
 
 [[package]]
+name = "pwdlib"
+version = "0.3.1"
+description = "Modern password hashing for Python"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "pwdlib-0.3.1-py3-none-any.whl", hash = "sha256:944fa439198bed8ac3ea63dac76ea4ae43e2a35f4f21e9e725e82d3c2b97d6a5"},
+    {file = "pwdlib-0.3.1.tar.gz", hash = "sha256:2ffd1955c92190d5bfbdc5071bf7d422568b83f943453ebd3d43d031ccba37b1"},
+]
+
+[package.dependencies]
+argon2-cffi = {version = ">=23.1.0", optional = true, markers = "extra == \"argon2\""}
+
+[package.extras]
+argon2 = ["argon2-cffi (>=23.1.0)"]
+bcrypt = ["bcrypt (>=4.1.2)"]
+
+[[package]]
 name = "pycountry"
 version = "26.2.16"
 description = "ISO country, subdivision, language, currency and script definitions and their translations"
@@ -2930,4 +2949,4 @@ dev = ["pytest", "setuptools"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "7833d7ff766d2336ddbcf389dc4e5eb02f1cc90810de189a893cebc95c92eb44"
+content-hash = "4cb06eb6db6cb9a69d5794e09ffa644ba0b7edcce6cc47c0499a3d1b3345d330"

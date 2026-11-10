@@ -5,8 +5,8 @@ from uuid import uuid4
 import pytest
 from alembic import command
 from alembic.config import Config
-from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
 
 from models.orm.city import CityModel
@@ -30,13 +30,8 @@ def test_db_async_url(postgres_container) -> str:
 
 @pytest.fixture(scope="session")
 async def db_engine(test_db_async_url):
-    # asyncio event loop for tests was changed to session scope (in pyproject.toml),
-    # if it will be changed to function scope (default), add here parameter for engine creation:
-    # `poolclass=NullPool`
-    # because connections, which were created in one loop,
-    # will be reused in another loop and it will cause an error:
-    # "Future attached to a different loop" or "another operation is in progress"
-    async_engine = create_async_engine(test_db_async_url)
+    # null pool class to avoid reusing asyncpg connections across pytest's per-test event loops
+    async_engine = create_async_engine(test_db_async_url, poolclass=NullPool)
 
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", test_db_async_url)
@@ -57,9 +52,19 @@ async def db_engine(test_db_async_url):
 
 @pytest.fixture
 async def db_session(db_engine):
-    async_session = async_sessionmaker(db_engine, expire_on_commit=False)
-    async with async_session() as session:
-        yield session
+    async_connection = await db_engine.connect()
+    outer_transaction = await async_connection.begin()
+    async_session = async_sessionmaker(
+        bind=async_connection,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
+    try:
+        async with async_session() as session:
+            yield session
+    finally:
+        await outer_transaction.rollback()
+        await async_connection.close()
 
 
 @pytest.fixture
@@ -95,7 +100,7 @@ async def user_factory(db_session):
         suffix = uuid4().hex
         user = UserModel(
             email=f"user-{suffix}@example.com",
-            hashed_password="test-password-hash",
+            _hashed_password="test-password-hash",
             first_name="Test",
             last_name="User",
             role=UserRole.user,
