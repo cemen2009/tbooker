@@ -56,8 +56,17 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"       # every async test runs without @pytest.mark.asyncio
+asyncio_default_test_loop_scope = "function"     # every async test gets a new event loop
 testpaths    = ["tests"]
 pythonpath = ["src"]
+addopts = "--cov --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/__init__.py",
+    "*/migrations/env.py",
+]
 
 [tool.pyright]
 include = ["src"]

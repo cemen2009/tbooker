@@ -1,13 +1,13 @@
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
+from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy import Enum as SaEnum
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.sql.elements import ColumnElement
 
-from models.orm.base_model import BaseModel, TimestampMixin
 from core.security import CredentialsValidator, Hasher
+from models.orm.base_model import BaseModel, TimestampMixin
 
 if TYPE_CHECKING:
     from models.orm.booking import BookingModel
@@ -27,9 +27,12 @@ class UserStatus(Enum):
 
 class UserModel(BaseModel, TimestampMixin):
     __tablename__ = "users"
+    __table_args__ = (
+        CheckConstraint("email = lower(email)", name="ck_users_email_lowercase"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     _hashed_password: Mapped[str] = mapped_column(
         "hashed_password", String(255), nullable=False
     )
@@ -47,12 +50,16 @@ class UserModel(BaseModel, TimestampMixin):
         "BookingModel", back_populates="user"
     )
 
+    @validates("email")
+    def normalize_email(self, _key: str, email: str) -> str:
+        return email.lower()
+
     def __repr__(self) -> str:
         return f"UserModel(id={self.id!r}, email={self.email!r}, first_name={self.first_name!r}, last_name={self.last_name!r})"
 
     @classmethod
     def order_by(cls) -> list[ColumnElement[Any]]:
-        return [cls.last_name.asc(), cls.first_name.asc(), cls.id.asc()]
+        return [cls.first_name.asc(), cls.last_name.asc(), cls.id.asc()]
 
     @property
     def password(self) -> None:
