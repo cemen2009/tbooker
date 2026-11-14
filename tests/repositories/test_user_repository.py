@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from common.exceptions.repository import DuplicateEntityError
 from models.orm.user import UserModel, UserRole, UserStatus
 from repositories import UserRepository
 
@@ -93,9 +94,8 @@ async def test_user_email_is_lowercase_and_case_insensitively_unique(db_session)
         first_name="Duplicate",
         status=UserStatus.active,
     )
-    with pytest.raises(IntegrityError):
+    with pytest.raises(DuplicateEntityError):
         await repository.create_new_user(duplicate)
-    await db_session.rollback()
 
 
 async def test_database_rejects_non_lowercase_user_email(db_session):
