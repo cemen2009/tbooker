@@ -1,7 +1,9 @@
 from sqlalchemy import func, or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 
+from common.exceptions.repository import DuplicateEntityError
 from models.orm import UserModel, UserStatus
 
 
@@ -11,12 +13,18 @@ class UserRepository:
 
     async def create_new_user_and_dont_commit(self, user: UserModel) -> UserModel:
         self.session.add(user)
-        await self.session.flush()
+        try:
+            await self.session.flush()
+        except IntegrityError as error:
+            await self._handle_integrity_error(error)
         return user
 
     async def create_new_user(self, user: UserModel) -> UserModel:
         await self.create_new_user_and_dont_commit(user)
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except IntegrityError as error:
+            await self._handle_integrity_error(error)
         return user
 
     async def get_user_by_id(self, user_id: int) -> UserModel | None:
@@ -75,13 +83,49 @@ class UserRepository:
         return list(result.all()), total
 
     async def update_user_and_dont_commit(self, user: UserModel) -> UserModel:
-        await self.session.flush()
+        try:
+            await self.session.flush()
+        except IntegrityError as error:
+            await self._handle_integrity_error(error)
         return user
 
     async def update_user(self, user: UserModel) -> UserModel:
         await self.update_user_and_dont_commit(user)
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except IntegrityError as error:
+            await self._handle_integrity_error(error)
         return user
+
+    async def _handle_integrity_error(self, error: IntegrityError) -> None:
+        await self.session.rollback()
+        if self._is_email_unique_violation(error):
+            raise DuplicateEntityError(
+                "A user with this email already exists"
+            ) from error
+        raise error
+
+    @staticmethod
+    def _is_email_unique_violation(error: IntegrityError) -> bool:
+        original_error: BaseException | None = error.orig
+        visited: set[int] = set()
+        while original_error is not None and id(original_error) not in visited:
+            visited.add(id(original_error))
+            constraint_name = getattr(original_error, "constraint_name", None)
+            if constraint_name is None:
+                diagnostic = getattr(original_error, "diag", None)
+                constraint_name = getattr(diagnostic, "constraint_name", None)
+            if constraint_name == "users_email_key":
+                return True
+
+            cause = original_error.__cause__ or original_error.__context__
+            nested_error = getattr(original_error, "orig", None)
+            original_error = (
+                nested_error
+                if isinstance(nested_error, BaseException)
+                else cause
+            )
+        return False
 
     async def delete_user_and_dont_commit(self, user: UserModel) -> None:
         await self.session.delete(user)

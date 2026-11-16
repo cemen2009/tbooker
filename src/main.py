@@ -4,10 +4,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from common.exceptions.api import register_exception_handlers
 from core.config import get_settings
 from core.db.sessions.postgres import postgres_async_engine
 from core.logging import setup_logging
-
 
 settings = get_settings()
 setup_logging(settings.debug)
@@ -29,6 +29,7 @@ app = FastAPI(
     debug=settings.debug,
     lifespan=lifespan
 )
+register_exception_handlers(app)
 
 
 @app.get("/health")
