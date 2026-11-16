@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from core.config import get_settings
 from core.db.sessions.postgres import postgres_async_engine
 from core.logging import setup_logging
+from core.redis.registry import RedisRegistry
 
 
 settings = get_settings()
@@ -18,10 +19,14 @@ logger.info("Application logger is configured")
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
+    registry = RedisRegistry(settings.redis)
+    await registry.start()
+    app.state.redis = registry
     try:
         yield
-    finally:
-        await postgres_async_engine.dispose()
+    finally:    # this section under called once application is shut down
+        await registry.stop()   # tear down Redis
+        await postgres_async_engine.dispose()   # dispose PostgreSQL database
 
 
 app = FastAPI(
